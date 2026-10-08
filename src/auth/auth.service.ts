@@ -27,7 +27,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid username or password');
     }
 
-    const isMatch = comparePassword(dto.password, user.password); // check password
+    const isMatch = await comparePassword(dto.password, user.password); // check password
 
     if (!isMatch) {
       throw new UnauthorizedException('Invalid username or password');

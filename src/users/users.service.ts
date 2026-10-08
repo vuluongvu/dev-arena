@@ -1,11 +1,14 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { User } from './entities/user.entity.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { hashPassword } from '../common/utils/hash.util.js';
-
 
 @Injectable()
 export class UsersService {
@@ -74,7 +77,9 @@ export class UsersService {
   async findOneUser(username: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ username });
     if (!user)
-      throw new NotFoundException(`Not found user with username: ${username}!`);
+      throw new UnauthorizedException(
+        `Not found user with username: ${username}!`,
+      );
     return user;
   }
 }
