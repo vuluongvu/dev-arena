@@ -5,13 +5,13 @@ import { UsersModule } from './users/users.module.js';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module.js';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard.js';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { RolesGuard } from './auth/guards/roles.guard.js';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor.js';
 import { AllExceptionsFilter } from './common/exception-filters/all-exceptions-filter.filter.js';
 import { RequestMiddleware } from './common/middleware/request-id.middleware.js';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard.js';
+import { RolesGuard } from './auth/guards/roles.guard.js';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js';
 
 @Module({
@@ -47,40 +47,40 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js
   providers: [
     AppService,
 
-    // Global JwtGuard
+    // 1. Run first: Rate limiting guard
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+
+    // 2. Run second: JWT authentication guard
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
 
-    // Global role-based guard
+    // 3. Run third: Roles guard
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
 
-    // Global transform interceptor to format API responses
+    // 4. Transform format response
     {
       provide: APP_INTERCEPTOR,
       useClass: TransformInterceptor,
     },
 
-    // Global logging interceptor to log requests and responses
+    // 5. Logging interceptor: response / request
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
     },
 
-    // Hide logging interceptor from global scope, as it may expose sensitive information in production
+    // 6. Global exception filter
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
-    },
-
-    // Global ThrottlerGuard for rate limiting
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
     },
   ],
 })
