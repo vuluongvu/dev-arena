@@ -82,4 +82,13 @@ export class UsersService {
       );
     return user;
   }
+
+  // function: find user by username with password
+  async findByUsernameWithPassword(username: string): Promise<User | null> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.username = :username', { username })
+      .getOne();
+  }
 }

@@ -2,11 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Role } from '../../common/enums/role.enum.js';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User {
@@ -19,7 +19,8 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column({ select: true })
+  @Exclude()
+  @Column({ select: false })
   password: string;
 
   @Column({ type: 'enum', enum: Role, default: Role.USER })

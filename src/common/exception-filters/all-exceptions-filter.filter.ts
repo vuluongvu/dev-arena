@@ -4,33 +4,51 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
+
 @Catch()
-// che thông tin nhạy cảm, tránh gửi cho client
 export class AllExceptionsFilter implements ExceptionFilter {
+  private readonly logger = new Logger(AllExceptionsFilter.name);
+
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
+
   catch(exception: unknown, host: ArgumentsHost) {
     const { httpAdapter } = this.httpAdapterHost;
     const ctx = host.switchToHttp();
-    // Mặc định: 500 cho lỗi chưa biết
+    const request = ctx.getRequest();
+    const response = ctx.getResponse();
+
     const status =
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
-    // Không trả stack trace hay message chi tiết cho client
+
+    // Log ở server, không trả thông tin nội bộ cho client
+    if (status >= 500) {
+      this.logger.error(
+        `${request.method} ${httpAdapter.getRequestUrl(request)} - ${status}`,
+        exception instanceof Error ? exception.stack : String(exception),
+      );
+    } else {
+      this.logger.warn(
+        `${request.method} ${httpAdapter.getRequestUrl(request)} - ${status}`,
+      );
+    }
+
     const responseBody = {
       statusCode: status,
       timestamp: new Date().toISOString(),
-      path: httpAdapter.getRequestUrl(ctx.getRequest()),
-      // Thông báo chung chung, không nhạy cảm
+      path: httpAdapter.getRequestUrl(request),
       message:
         status === HttpStatus.INTERNAL_SERVER_ERROR
           ? 'Internal server error'
           : exception instanceof HttpException
             ? exception.getResponse()
-            : null,
+            : 'Internal server error',
     };
-    httpAdapter.reply(ctx.getResponse(), responseBody, status);
+
+    httpAdapter.reply(response, responseBody, status);
   }
 }

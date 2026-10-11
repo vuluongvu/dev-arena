@@ -21,7 +21,9 @@ export class AuthService {
 
   // function: login account
   async login(dto: LoginDto) {
-    const user = await this.usersService.findOneUser(dto.username); // find account
+    const user = await this.usersService.findByUsernameWithPassword(
+      dto.username,
+    ); // find account
 
     if (!user) {
       throw new UnauthorizedException('Invalid username or password');

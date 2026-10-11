@@ -1,21 +1,29 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
 import { ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Bật validate pipe toàn cục
+  // enable global validate pipe
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // loại field không khai báo trong DTO
-      forbidNonWhitelisted: true, // field lạ -> tra về 400
-      transform: true, // tự convert type (string -> number...)
+      whitelist: true, // remove not allowed fields
+      forbidNonWhitelisted: true, // wrong filed -> return 400
+      transform: true, // convert type (string -> number...)
     }),
   );
 
   // set global prefix api/v1/...
   app.setGlobalPrefix('api/v1');
+
+  // enable shutdown hooks for graceful shutdown
+  app.enableShutdownHooks();
+
+  // use helmet for security headers
+  app.use(helmet());
 
   // enable CORS
   app.enableCors({
@@ -23,6 +31,19 @@ async function bootstrap() {
     credentials: true,
   });
 
+  // setup swagger documentation at /api/docs
+  const config = new DocumentBuilder()
+    .setTitle('My Backend API')
+    .setDescription('API documentation')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
+
+  // start the application
   await app.listen(process.env.PORT ?? 3000);
 }
+// start the application
 await bootstrap();

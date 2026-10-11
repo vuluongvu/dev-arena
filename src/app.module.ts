@@ -13,10 +13,23 @@ import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard.js';
 import { RolesGuard } from './auth/guards/roles.guard.js';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js';
+import Joi from 'joi';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+
+      // Validation schema for environment variables
+      validationSchema: Joi.object({
+        DB_HOST: Joi.string().required(),
+        DB_PORT: Joi.number().port().required(),
+        DB_USERNAME: Joi.string().required(),
+        DB_PASSWORD: Joi.string().allow('').required(),
+        DB_NAME: Joi.string().required(),
+        JWT_SECRET: Joi.string().min(32).required(),
+      }),
+    }),
 
     // ThrottlerModule for rate limiting
     ThrottlerModule.forRoot([
@@ -26,16 +39,18 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js
       },
     ]),
 
+    //
+
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'mysql',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_NAME'),
+        host: configService.getOrThrow<string>('DB_HOST'),
+        port: configService.getOrThrow<number>('DB_PORT'),
+        username: configService.getOrThrow<string>('DB_USERNAME'),
+        password: configService.getOrThrow<string>('DB_PASSWORD'),
+        database: configService.getOrThrow<string>('DB_NAME'),
         autoLoadEntities: true,
         synchronize: true, // only for development, set to false in production
       }),
