@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service.js';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto.js';
@@ -32,7 +36,7 @@ export class AuthService {
     const isMatch = await comparePassword(dto.password, user.password); // check password
 
     if (!isMatch) {
-      throw new UnauthorizedException('Invalid username or password');
+      throw new NotFoundException('User not found');
     }
 
     return this.signToken(user.id, user.username, user.role);
