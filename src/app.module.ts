@@ -28,6 +28,7 @@ import Joi from 'joi';
         DB_PASSWORD: Joi.string().allow('').required(),
         DB_NAME: Joi.string().required(),
         JWT_SECRET: Joi.string().min(32).required(),
+        JWT_EXPIRATION: Joi.string().default('24h').required(),
       }),
     }),
 

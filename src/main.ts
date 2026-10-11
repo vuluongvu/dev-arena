@@ -1,6 +1,6 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module.js';
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
@@ -30,6 +30,9 @@ async function bootstrap() {
     origin: process.env.CORS_ORIGIN || '*',
     credentials: true,
   });
+
+  // use global interceptor for class serialization
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   // setup swagger documentation at /api/docs
   const config = new DocumentBuilder()
