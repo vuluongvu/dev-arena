@@ -1,4 +1,4 @@
-import { applyDecorators, UseGuards } from '@nestjs/common';
+import { applyDecorators } from '@nestjs/common';
 import { Role } from '../../common/enums/role.enum.js';
 import { Roles } from './roles.decorator.js';
 import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
