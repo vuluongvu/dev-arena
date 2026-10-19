@@ -1,6 +1,8 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto.js';
@@ -8,7 +10,8 @@ import { User } from './entities/user.entity.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { hashPassword } from '../common/utils/hash.util.js';
+import { comparePassword, hashPassword } from '../common/utils/hash.util.js';
+import { ChangePasswordDto } from '../auth/dto/change-password.dto.js';
 
 @Injectable()
 export class UsersService {
@@ -90,5 +93,48 @@ export class UsersService {
       .addSelect('user.password')
       .where('user.username = :username', { username })
       .getOne();
+  }
+
+  // function: find user by id with password
+  async findByIdWithPassword(id: number): Promise<User | null> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.id = :id', { id })
+      .getOne();
+  }
+
+  // function: change password
+  async changePassword(
+    userId: number,
+    dto: ChangePasswordDto,
+  ): Promise<{ message: string }> {
+    if (dto.currentPassword === dto.newPassword) {
+      throw new BadRequestException(
+        'New password must be different from current password',
+      );
+    }
+
+    const user = await this.findByIdWithPassword(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isValidPassword = await comparePassword(
+      dto.currentPassword,
+      user.password,
+    );
+
+    if (!isValidPassword) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+
+    const hashedPassword = await hashPassword(dto.newPassword);
+    await this.userRepository.update(
+      { id: user.id },
+      { password: hashedPassword },
+    );
+
+    return { message: 'Password changed successfully' };
   }
 }

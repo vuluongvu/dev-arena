@@ -40,7 +40,6 @@ import Joi from 'joi';
       },
     ]),
 
-    //
 
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

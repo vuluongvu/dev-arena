@@ -7,8 +7,9 @@ import { UsersService } from '../users/users.service.js';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto.js';
 import { LoginDto } from './dto/login.dto.js';
-import { comparePassword } from '../common/utils/hash.util.js';
+import { comparePassword, hashPassword } from '../common/utils/hash.util.js';
 import { Role } from '../common/enums/role.enum.js';
+import { ChangePasswordDto } from './dto/change-password.dto.js';
 
 @Injectable()
 export class AuthService {
@@ -47,5 +48,10 @@ export class AuthService {
     const payload = { sub: userId, username, role };
     const accessToken = await this.jwtService.signAsync(payload);
     return { accessToken };
+  }
+
+  // function: change password
+  async changePassword(userId: number, dto: ChangePasswordDto) {
+    return this.usersService.changePassword(userId, dto);
   }
 }
