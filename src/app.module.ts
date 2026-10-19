@@ -13,6 +13,7 @@ import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard.js';
 import { RolesGuard } from './auth/guards/roles.guard.js';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js';
+import { ProblemsModule } from './problems/problems.module.js';
 import Joi from 'joi';
 
 @Module({
@@ -57,6 +58,7 @@ import Joi from 'joi';
     }),
     UsersModule,
     AuthModule,
+    ProblemsModule,
   ],
   controllers: [AppController],
   providers: [
