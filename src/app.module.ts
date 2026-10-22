@@ -14,6 +14,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard.js';
 import { RolesGuard } from './auth/guards/roles.guard.js';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js';
 import { ProblemsModule } from './problems/problems.module.js';
+import { SubmissionsModule } from './submissions/submissions.module.js';
 import Joi from 'joi';
 
 @Module({
@@ -59,6 +60,7 @@ import Joi from 'joi';
     UsersModule,
     AuthModule,
     ProblemsModule,
+    SubmissionsModule,
   ],
   controllers: [AppController],
   providers: [

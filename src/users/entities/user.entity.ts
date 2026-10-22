@@ -2,11 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Role } from '../../common/enums/role.enum.js';
 import { Exclude } from 'class-transformer';
+import { Submission } from '../../submissions/entities/submission.entity.js';
 
 @Entity()
 export class User {
@@ -32,5 +34,9 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  
+  // user -> submissions
+  @OneToMany(() => Submission, (submission) => submission.user, {
+    cascade: true,
+  })
+  submissions: Submission[];
 }
