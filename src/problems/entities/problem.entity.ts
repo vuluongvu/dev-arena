@@ -9,6 +9,7 @@ import {
 import { Difficulty } from '../../common/enums/difficulty.enum.js';
 import { ProblemStatus } from '../../common/enums/problem-status.enum.js';
 import { Submission } from '../../submissions/entities/submission.entity.js';
+import { ProblemTestCase } from './problem-test-case.entity.js';
 
 @Entity()
 export class Problem {
@@ -40,6 +41,13 @@ export class Problem {
   @OneToMany(() => Submission, (submission) => submission.problem, {
     cascade: true,
   })
+
+  // problem -> problem test case
+  @OneToMany(
+    () => ProblemTestCase,
+    (problemTestCase) => problemTestCase.problem,
+  )
+  problemTestCase: ProblemTestCase[];
   submissions: Submission[];
 
   @CreateDateColumn()

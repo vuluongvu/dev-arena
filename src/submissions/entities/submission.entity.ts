@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -34,9 +35,18 @@ export class Submission {
   @Column({ type: 'enum', enum: SubmissionStatus })
   submissionStatus: SubmissionStatus;
 
+  @Column({ default: 0 })
+  passedTestCases: number;
+
+  @Column({ default: 0 })
+  totalTestCases: number;
+
   @Column()
   executionTimeMs: number;
 
   @Column()
   memoryUsedKb: number;
+
+  @CreateDateColumn()
+  submittedAt: Date;
 }
