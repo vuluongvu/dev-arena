@@ -4,6 +4,7 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
+  type Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import { Role } from '../../common/enums/role.enum.js';
@@ -38,5 +39,5 @@ export class User {
   @OneToMany(() => Submission, (submission) => submission.user, {
     cascade: true,
   })
-  submissions: Submission[];
+  submissions: Relation<Submission[]>;
 }

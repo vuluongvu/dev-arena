@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  type Relation,
 } from 'typeorm';
 import { SupportedLanguage } from '../../common/enums/supported-language.enum.js';
 import { SubmissionStatus } from '../../common/enums/submission-status.enum.js';
@@ -19,12 +20,12 @@ export class Submission {
   // user -> submissions
   @ManyToOne(() => User, (user) => user.submissions)
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user: Relation<User>;
 
   // problem -> submissions
   @ManyToOne(() => Problem, (problem) => problem.submissions)
   @JoinColumn({ name: 'problem_id' })
-  problem: Problem;
+  problem: Relation<Problem>;
 
   @Column({ type: 'enum', enum: SupportedLanguage })
   language: SupportedLanguage;

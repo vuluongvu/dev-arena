@@ -38,10 +38,9 @@ import Joi from 'joi';
     ThrottlerModule.forRoot([
       {
         ttl: 60_000,
-        limit: 3, // 10 requests per minute
+        limit: 10, // 10 requests per minute
       },
     ]),
-
 
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

@@ -5,6 +5,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  type Relation,
 } from 'typeorm';
 import { Difficulty } from '../../common/enums/difficulty.enum.js';
 import { ProblemStatus } from '../../common/enums/problem-status.enum.js';
@@ -41,14 +42,14 @@ export class Problem {
   @OneToMany(() => Submission, (submission) => submission.problem, {
     cascade: true,
   })
+  submissions: Relation<Submission[]>;
 
   // problem -> problem test case
   @OneToMany(
     () => ProblemTestCase,
     (problemTestCase) => problemTestCase.problem,
   )
-  problemTestCase: ProblemTestCase[];
-  submissions: Submission[];
+  problemTestCase: Relation<ProblemTestCase[]>;
 
   @CreateDateColumn()
   createdAt: Date;

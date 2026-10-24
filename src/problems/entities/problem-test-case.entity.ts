@@ -1,4 +1,3 @@
-
 import {
   Column,
   CreateDateColumn,
@@ -7,6 +6,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  type Relation,
 } from 'typeorm';
 import { Problem } from './problem.entity.js';
 
@@ -14,12 +14,6 @@ import { Problem } from './problem.entity.js';
 export class ProblemTestCase {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @ManyToOne(() => Problem, (problem) => problem.problemTestCase, {
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'problem_id' })
-  problem: Problem;
 
   @Column({ type: 'mediumtext' })
   input: string;
@@ -38,4 +32,11 @@ export class ProblemTestCase {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  // problem -> testcases
+  @ManyToOne(() => Problem, (problem) => problem.problemTestCase, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'problem_id' })
+  problem: Relation<Problem>;
 }
