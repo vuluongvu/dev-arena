@@ -16,6 +16,7 @@ services:
       DB_NAME: ${DB_NAME}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
+      JUDGE0_URL: ${JUDGE0_URL}
     depends_on:
       mysql:
         condition: service_healthy
