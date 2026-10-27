@@ -31,6 +31,7 @@ import Joi from 'joi';
         DB_NAME: Joi.string().required(),
         JWT_SECRET: Joi.string().min(32).required(),
         JWT_EXPIRATION: Joi.string().default('24h').required(),
+        JUDGE0_URL: Joi.string().uri().required(),
       }),
     }),
 
